@@ -32,10 +32,6 @@ def scrape_thoughts():
                 thoughts.append((quote, source))
     return thoughts
 
-import requests
-import random
-from bs4 import BeautifulSoup as bs
-
 def get_random_quote():
     urls = [
     "https://wh40k.lexicanum.com/wiki/Imperium_Quotes",
