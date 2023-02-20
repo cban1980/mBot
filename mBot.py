@@ -3,10 +3,15 @@ from nextcord import Intents
 import nextcord
 from nextcord.ext import commands
 import logging
+from dotenv import load_dotenv
+
 
 # Set up basic logging.
 
 logging.basicConfig(level=logging.INFO)
+
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
 list_guild_ids = 1049804249204264972  
 
 intents = nextcord.Intents.default()

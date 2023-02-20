@@ -3,7 +3,6 @@ services:
   mbot:
     build:
       context: .
-    environment:
     restart: unless-stopped
 
 volumes:
