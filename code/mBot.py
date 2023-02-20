@@ -46,7 +46,7 @@ async def on_ready():
 class CogLoads(commands.Cog):
     def __init__(self, bot):
         self.client = bot
-    @bot.slash_command(description="Load cog.", guild_ids=[list_guild_ids])
+    @bot.slash_command(description="Load cog.")
     async def loadcog(ctx, extension):
         try:
             bot.load_extension(f"cogs.{extension}")
@@ -58,7 +58,7 @@ class CogLoads(commands.Cog):
         except Exception as e:
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
-    @bot.slash_command(description="Unload cog.", guild_ids=[list_guild_ids])
+    @bot.slash_command(description="Unload cog.")
     async def unloadcog(ctx, extension):
         try:
             bot.unload_extension(f"cogs.{extension}")
@@ -70,7 +70,7 @@ class CogLoads(commands.Cog):
         except Exception as e:
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
-    @bot.slash_command(description="Reload cogs.", guild_ids=[list_guild_ids])
+    @bot.slash_command(description="Reload cogs.")
     async def reloadcogs(ctx, extension):
         try:
             bot.reload_extension(f"cogs.{extension}")
