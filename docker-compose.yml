@@ -1,11 +1,9 @@
 version: "3"
 services:
-  sbot:
+  mbot:
     build:
       context: .
     environment:
-      DISCORD_TOKEN: MTA3Njc0MDM0ODI1NDEwNTc1MA.GSSrnQ.wpibZooPiDBYWlc6USmjiv2cTu2muXEChHZSsM
-      DISCORD_GUILD: The Shrike's Nest
     restart: unless-stopped
 
 volumes:
