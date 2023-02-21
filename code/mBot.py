@@ -4,6 +4,9 @@ import nextcord
 from nextcord.ext import commands
 import logging
 from dotenv import load_dotenv
+import random
+import requests
+from bs4 import BeautifulSoup as bs
 
 
 # Set up basic logging.
@@ -34,12 +37,22 @@ if __name__ == '__main__':
     for extension in initial_extensions:
         client.load_extension(extension)
 
-TOKEN = os.getenv('DISCORD_TOKEN')
+# Bofh function to use for Bot activity upon login.
+def bofh():
+    """Return random bofh quote"""
+    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses').text
+    soup = bs(url_data, 'html.parser')
+    for line in soup:
+        soppa = line.splitlines()
+        soppa = random.choice(soppa)
+    return soppa
+
 
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
+    await bot.change_presence(activity=nextcord.Game(name=bofh()))
 
 # Some bot commands for handling loading and unloading of cogs.
 
