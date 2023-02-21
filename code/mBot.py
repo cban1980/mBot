@@ -55,6 +55,7 @@ async def on_ready():
     await bot.change_presence(activity=nextcord.Game(name=bofh()))
 
 # Some bot commands for handling loading and unloading of cogs.
+# These commands are pretty much self explainatory.
 
 class CogLoads(commands.Cog):
     def __init__(self, bot):
