@@ -59,6 +59,12 @@ async def on_ready():
 class CogLoads(commands.Cog):
     def __init__(self, bot):
         self.client = bot
+    async def cog_check(self, ctx):
+        if not ctx.author.guild_permissions.administrator:
+            await ctx.send("You lack permissions for this command.")
+            return False
+        return True
+
     @bot.slash_command(description="Load cog.")
     async def loadcog(ctx, extension):
         try:
