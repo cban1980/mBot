@@ -105,6 +105,25 @@ class WarhammerCog(commands.Cog):
         if source and source != "Source":
             embed.add_field(name="Source: ", value=source, inline=False)
         await ctx.send(embed=embed)
+    @nextcord.slash_command(name="roll_dice", description="Dice rolling for Warhammer games.")
+    async def roll_dice(self, interaction: nextcord.Interaction, dice: str):
+        """Rolls a specified number of dice in a Warhammer game."""
+        try:
+            num_dice, dice_type = dice.split('d')
+            num_dice = int(num_dice)
+            dice_type = int(dice_type)
+        except ValueError:
+            await ctx.send('Invalid input format. Please specify the number and type of dice to roll (e.g. 2d6).')
+            return
+
+        if num_dice <= 0 or dice_type <= 0:
+            await ctx.send('Invalid input. The number and type of dice to roll must be positive integers.')
+            return
+
+        rolls = [random.randint(1, dice_type) for _ in range(num_dice)]
+        total = sum(rolls)
+
+        await interaction.response.send_message(f'Rolling {num_dice}d{dice_type}...\n{rolls}\nTotal: {total}')
 
 def setup(bot):
     bot.add_cog(WarhammerCog(bot))
