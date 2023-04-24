@@ -11,7 +11,7 @@ class MatCog(commands.Cog):
         self.bot = bot
 
     @nextcord.slash_command(name="resturanger", description="Lista av resturanger i Mjärdevi", guild_ids=list_guild_ids)
-    async def resturangert(self, ctx: nextcord.Interaction):
+    async def resturanger(self, ctx: nextcord.Interaction):
         restaurants = ["Restaurant 1", "Restaurant 2", "Restaurant 3"]
         restaurant_list = "\n".join([f"• {r}" for r in restaurants])
         await ctx.send(f"Here are the restaurants in Mjärdevi, Linköping:\n{restaurant_list}")
