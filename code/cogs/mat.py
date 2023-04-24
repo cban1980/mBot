@@ -4,6 +4,7 @@ from nextcord import Interaction
 import os
 
 list_guild_ids = os.getenv("GUILD_ID").split(",")
+list_guild_ids = [int(id) for id in list_guild_ids]
 
 class MatCog(commands.Cog):
     def __init__(self, bot):
