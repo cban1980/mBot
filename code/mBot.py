@@ -19,8 +19,8 @@ list_guild_ids = os.getenv("GUILD_ID")
 
 intents = nextcord.Intents.default()
 intents.message_content = True
-intents.typing = False
-intents.presences = False
+intents.typing = True
+intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
