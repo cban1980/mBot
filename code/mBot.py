@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-list_guild_ids = os.getenv("GUILD_ID")
+list_guild_ids = int(os.getenv("GUILD_ID"))
 
 intents = nextcord.Intents.default()
 intents.message_content = True
