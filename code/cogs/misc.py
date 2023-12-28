@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Class for miscellaneous functions called in mBot.py
-
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction
@@ -16,6 +12,7 @@ class misc(commands.Cog):
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
+
 # Function that will return host system information and system load as a nextcord.Embed object, to be used in the /sysinfo slash command.
 @nextcord.slash_command(name="sysinfo", description="Shows host system information.", guild_ids=[list_guild_ids])
 async def sysinfo(self, ctx: nextcord.Interaction):
@@ -32,17 +29,6 @@ async def sysinfo(self, ctx: nextcord.Interaction):
     embed.add_field(name="Machine: ", value=uname.machine, inline=False)
     embed.add_field(name="Processor: ", value=uname.processor, inline=False)
     embed.add_field(name="System Load: ", value=load, inline=False)
-    await ctx.send(embed=embed)
-
-# Function that returns what slash commands the bot has registered.
-@nextcord.slash_command(name="show_commands", description="Shows registered slash commands.", guild_ids=[list_guild_ids])
-async def show_commands(self, ctx: nextcord.Interaction):
-    # Get the slash commands registered to the bot
-    commands = bot.slash_commands
-    # Create an embed with the slash commands
-    embed = nextcord.Embed(title="Slash Commands", color=0x00ff00)
-    for command in commands:
-        embed.add_field(name=command.name, value=command.description, inline=False)
     await ctx.send(embed=embed)
 
 def setup(bot):
