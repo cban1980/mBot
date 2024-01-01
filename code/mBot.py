@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import random
 import requests
 from bs4 import BeautifulSoup as bs
+import os
 
 
 # Set up basic logging.
@@ -16,11 +17,16 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
+# Set variable for config directory. which will be used for loading admin list and other configs.
+# will be located in the same directory as the mBot.py file.
+
+
 intents = nextcord.Intents.default()
 intents.message_content = True
 intents.typing = True
 intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 @bot.event
 async def on_ready():
@@ -46,7 +52,6 @@ def bofh():
         soppa = random.choice(soppa)
     return soppa
 
-
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
@@ -57,9 +62,36 @@ async def on_ready():
 # Some bot commands for handling loading and unloading of cogs.
 # These commands are pretty much self explainatory.
 
-class CogLoads(commands.Cog):
+
+class mBot(commands.Cog):
     def __init__(self, bot):
         self.client = bot
+    
+    # list of bot admins by user id read from .admins file, this is read from the config/.admins file
+    def get_admins(self):
+        admins = []
+        admins_file_path = os.path.join(self.script_dir, "..", "config", ".admins")
+        with open(admins_file_path, "r") as f:
+            for line in f:
+                admins.append(int(line.strip()))
+        return admins
+        
+    # checks if user is admin by comparing user id to list of admins
+    def is_admin(self, user):
+        if user.id in self.get_admins():
+            return True
+        else:
+            return False
+
+    @bot.slash_command(name="admin_list", description="👑Current mBot admins👑")
+    async def admin_list(interaction: nextcord.Interaction):
+        admins = mBot.get_admins()
+        embed = nextcord.Embed(title="👑Current mBot admins👑", description=" ", color=nextcord.Color.green())
+        for admin in admins:
+            user = await bot.fetch_user(admin)
+            embed.add_field(name=" ", value=f"{user.name.strip('{}')}", inline=False)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
     async def cog_check(self, ctx):
         if not ctx.author.guild_permissions.administrator:
             await ctx.send("You lack permissions for this command.")
