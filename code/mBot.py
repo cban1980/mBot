@@ -15,7 +15,6 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-list_guild_ids = int(os.getenv("GUILD_ID"))
 
 intents = nextcord.Intents.default()
 intents.message_content = True
@@ -32,10 +31,12 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         print(f'Loaded Cog: {filename[:-3]}')
         bot.load_extension(f'cogs.{filename[:-3]}')
+for command in bot.slash_commands:
+    print(command.name)
 
 if __name__ == '__main__':
     for extension in initial_extensions:
-        client.load_extension(extension)
+        bot.load_extension(extension)
 
 # Bofh function to use for Bot activity upon login.
 def bofh():
@@ -52,6 +53,7 @@ def bofh():
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
+    print("Registered slash commands:")
     await bot.change_presence(activity=nextcord.Game(name=bofh()))
 
 # Some bot commands for handling loading and unloading of cogs.
@@ -106,7 +108,5 @@ class CogLoads(commands.Cog):
     async def listcogs(interaction: nextcord.Interaction):
         loaded_cogs = ", ".join(bot.extensions.keys())
         await interaction.send(f"⚙️ Loaded cogs: {loaded_cogs} ⚙️")
-
-
 
 bot.run(TOKEN)
