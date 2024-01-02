@@ -2,6 +2,7 @@ import os
 from nextcord import Intents
 import nextcord
 from nextcord.ext import commands
+from nextcord import Interaction
 import logging
 from dotenv import load_dotenv
 import random
@@ -66,31 +67,6 @@ async def on_ready():
 class mBot(commands.Cog):
     def __init__(self, bot):
         self.client = bot
-    
-    # list of bot admins by user id read from .admins file, this is read from the config/.admins file
-    def get_admins(self):
-        admins = []
-        admins_file_path = os.path.join(self.script_dir, "..", "config", ".admins")
-        with open(admins_file_path, "r") as f:
-            for line in f:
-                admins.append(int(line.strip()))
-        return admins
-        
-    # checks if user is admin by comparing user id to list of admins
-    def is_admin(self, user):
-        if user.id in self.get_admins():
-            return True
-        else:
-            return False
-
-    @bot.slash_command(name="admin_list", description="👑Current mBot admins👑")
-    async def admin_list(interaction: nextcord.Interaction):
-        admins = mBot.get_admins()
-        embed = nextcord.Embed(title="👑Current mBot admins👑", description=" ", color=nextcord.Color.green())
-        for admin in admins:
-            user = await bot.fetch_user(admin)
-            embed.add_field(name=" ", value=f"{user.name.strip('{}')}", inline=False)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     async def cog_check(self, ctx):
         if not ctx.author.guild_permissions.administrator:
