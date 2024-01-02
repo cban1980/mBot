@@ -13,7 +13,7 @@ import os
 
 # Set up basic logging.
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -31,12 +31,13 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print("We have logged in as {bot.user}")
 
 initial_extensions = []
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
-        print(f'Loaded Cog: {filename[:-3]}')
+        cog_name = f'\033[94m{filename[:-3]}\033[0m'
+        print(f'Loaded Cog: {cog_name}')
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 if __name__ == '__main__':
@@ -57,7 +58,6 @@ def bofh():
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
-    print("Registered slash commands:")
     await bot.change_presence(activity=nextcord.Game(name=bofh()))
 
 # Some bot commands for handling loading and unloading of cogs.

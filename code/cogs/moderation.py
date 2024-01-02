@@ -25,7 +25,7 @@ class moderation(commands.Cog):
     
     # Slash command that will delete all posts by users on the server.
     @nextcord.slash_command(description="Delete posts by a user.")
-    async def user_purge(self, ctx: Interaction, user: nextcord.Member, limit: str, channel: nextcord.TextChannel = None):
+    async def message_purge(self, ctx: Interaction, user: nextcord.Member, limit: str, channel: nextcord.TextChannel = None):
         if ctx.user.guild_permissions.administrator:
             if limit.lower() == 'all':
                 channel = ctx.channel if channel is None else channel
@@ -50,13 +50,10 @@ class moderation(commands.Cog):
                     if moderation_channel:
                         embed = nextcord.Embed(title="Link posted", description=f"User {message.author.mention} posted a link in {message.channel.mention} at {message.created_at}.", color=0x00ff00)
                         embed.add_field(name="Link", value=message.content, inline=False)
-                        
                         # Add interaction button for "Go to Message".
-                        go_to_message_button = nextcord.ui.Button(style=nextcord.ButtonStyle.link, label="Go to Message", url=message.jump_url)
-                        
+                        go_to_message_button = nextcord.ui.Button(style=nextcord.ButtonStyle.link, label="Go to Message", url=message.jump_url)  
                         view = nextcord.ui.View()
                         view.add_item(go_to_message_button)
-                        
                         await moderation_channel.send(embed=embed, view=view)
                         
 def setup(bot):
