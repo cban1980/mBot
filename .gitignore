@@ -1,3 +1,4 @@
 # ignore those files 
 .env
 .admins
+.nohup.out
