@@ -21,4 +21,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --disable=import-error,redefined-outer-name,broad-exception-caught,invalid-name,unused-import,no-member,no-self-argument $(git ls-files '*.py')
+        pylint --disable=redefined-outer-name,broad-exception-caught,invalid-name,unused-import,no-member,no-self-argument $(git ls-files '*.py')
