@@ -11,7 +11,6 @@ class moderation(commands.Cog):
         super().__init__()
         self.bot = bot
 
-    # Create the text channel #moderation if it doesnt exist.
     @commands.Cog.listener()
     async def on_ready(self):
         """Create the text channel"""
@@ -26,7 +25,6 @@ class moderation(commands.Cog):
                 await guild.create_text_channel("moderation", overwrites=overwrites)
 
 
-    # Slash command that will delete all posts by users on the server.
     @nextcord.slash_command(description="Delete posts by a user.")
     async def message_purge(
         self,
@@ -49,10 +47,6 @@ class moderation(commands.Cog):
         else:
             await ctx.send("You lack permissions for this command.")
 
-    # A listener that will look in all messages sent in the server.
-    # If the message contains a link, it will post in  the server chanel #moderation
-    # who sent the link, at what time, and the link itself.
-    # This will be sent as an embed.
     @commands.Cog.listener()
     async def on_message(self, message):
         """Check if message contains a link, and post it in #moderation."""

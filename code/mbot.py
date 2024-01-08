@@ -20,10 +20,6 @@ with open("../config/token", "r", encoding="utf-8") as file:
             TOKEN = line[len("DISCORD_TOKEN="):].strip()
             break
 
-# Set variable for config directory. which will be used for loading admin list and other configs.
-# will be located in the same directory as the mbot.py file.
-
-
 intents = nextcord.Intents.default()
 intents.message_content = True
 intents.typing = True
@@ -52,7 +48,6 @@ if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
 
-# Bofh function to use for Bot activity upon login.
 def bofh():
     """Return random bofh quote"""
     url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses', timeout=10).text

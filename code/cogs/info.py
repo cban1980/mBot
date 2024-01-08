@@ -9,13 +9,16 @@ from nextcord.ext import tasks, commands
 from nextcord import Interaction
 from bs4 import BeautifulSoup
 
+rss_feeds_file = '../config/rssfeeds.conf'
+latest_posts_file = '../data/latest_posts.json'
+
 class Info(commands.Cog):
     """Information commands and functions."""
     def __init__(self, bot):
         """Initialize the cog."""
         self.bot = bot
-        self.rss_feeds = self.load_rss_feeds('../config/rssfeeds.conf')
-        self.latest_posts_file = '../data/latest_posts.json'
+        self.rss_feeds = self.load_rss_feeds(rss_feeds_file)
+        self.latest_posts_file = latest_posts_file
         if os.path.exists(self.latest_posts_file) and os.path.getsize(self.latest_posts_file) > 0:
             with open(self.latest_posts_file, 'r', encoding="utf-8") as f:
                 self.latest_posts = json.load(f)
@@ -54,7 +57,7 @@ class Info(commands.Cog):
                 continue
 
             self.latest_posts[feed_name] = most_recent_entry.id
-            with open('../data/latest_posts.json', 'w', encoding="utf-8") as f:
+            with open(self.latest_posts_file, 'w', encoding="utf-8") as f:
                 json.dump(self.latest_posts, f)
 
             channel = nextcord.utils.get(self.bot.get_all_channels(), name='tech-nyheter')
@@ -78,7 +81,6 @@ class Info(commands.Cog):
 
                 await channel.send(embed=embed)
                 
-    # Slash command to add an rss feed to ../config/rssfeeds.conf with name and adress.
     @nextcord.slash_command(description="Add an RSS feed to the bot.")
     async def add_feed(self, ctx: Interaction, name: str, url: str):
         """Add an RSS feed to the bot."""
@@ -86,25 +88,21 @@ class Info(commands.Cog):
             if name in self.rss_feeds:
                 await ctx.send(f"Feed {name} already exists.")
             else:
-                with open('../config/rssfeeds.conf', 'a', encoding="utf-8") as f:
+                with open(rss_feeds_file, 'a', encoding="utf-8") as f:
                     f.write(f"\n{name} {url}\n")
                 self.rss_feeds[name] = url
                 await ctx.send(f"Feed {name} added.")
         else:
             await ctx.send("You lack permissions for this command.")
 
-    # Slash command to remove an rss feed from ../config/rssfeeds.conf.
-    # Takes the name of the feed as an argument, but deletes the whole line.
-    # Existing feeds in ../config/rssfeeds.conf will be listed as tabable arguments
-    # in the slash command.
     @nextcord.slash_command(description="Remove an RSS feed from the bot.")
     async def remove_feed(self, ctx: Interaction, name: str):
         """Remove an RSS feed from the bot."""
         if ctx.user.guild_permissions.administrator:
             if name in self.rss_feeds:
-                with open('../config/rssfeeds.conf', 'r', encoding="utf-8") as f:
+                with open(rss_feeds_file, 'r', encoding="utf-8") as f:
                     lines = f.readlines()
-                with open('../config/rssfeeds.conf', 'w', encoding="utf-8") as f:
+                with open(rss_feeds_file, 'w', encoding="utf-8") as f:
                     for line in lines:
                         if name not in line:
                             f.write(line)
@@ -113,7 +111,18 @@ class Info(commands.Cog):
             else:
                 await ctx.send(f"Feed {name} does not exist.")
         else:
-            await ctx.send("You lack permissions for this command.")    
+            await ctx.send("You lack permissions for this command.")
+
+    @nextcord.slash_command(description="List all RSS feeds.")
+    async def list_feeds(self, ctx: Interaction):
+        """List all RSS feeds."""
+        if ctx.user.guild_permissions.administrator:
+            embed = nextcord.Embed(title="RSS feeds", color=0x00ff00)
+            for feed_name in self.rss_feeds:
+                embed.add_field(name=feed_name, value=self.rss_feeds[feed_name], inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("You lack permissions for this command.")  
 
     @check_feed.before_loop
     async def before_check_feed(self):

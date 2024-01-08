@@ -6,7 +6,6 @@ from nextcord import Interaction
 import requests
 from bs4 import BeautifulSoup as bs
 
-
 def scrape_thoughts():
     """Scrape the Lexicanum for thoughts of the day."""
     urls = [
@@ -97,6 +96,7 @@ class WarhammerCog(commands.Cog):
         embed.add_field(name="Source: ", value=source, inline=False)
         # Send the embed
         await ctx.send(embed=embed)
+
     @nextcord.slash_command(name="whquote")
     async def whquote(self, ctx: nextcord.Interaction):
         """Sends a random Warhammer 40k quote."""
@@ -115,6 +115,7 @@ class WarhammerCog(commands.Cog):
         if source and source != "Source":
             embed.add_field(name="Source: ", value=source, inline=False)
         await ctx.send(embed=embed)
+
     @nextcord.slash_command(name="roll_dice", description="Dice rolling for Warhammer games.")
     async def roll_dice(self, interaction: nextcord.Interaction, dice: str):
         """Rolls a specified number of dice in a Warhammer game."""
