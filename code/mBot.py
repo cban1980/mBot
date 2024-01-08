@@ -4,7 +4,6 @@ import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction
 import logging
-from dotenv import load_dotenv
 import random
 import requests
 from bs4 import BeautifulSoup as bs
