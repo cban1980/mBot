@@ -50,10 +50,12 @@ class Info(commands.Cog):
 
     @tasks.loop(minutes=1.0)  # Checks every 1 minutes, adjust as needed
     async def check_feed(self):
+        """Check for new posts in the RSS feeds."""
         for feed_name, feed_url in self.rss_feeds.items():
             feed = feedparser.parse(feed_url)
             most_recent_entry = feed.entries[0]
-            if feed_name in self.latest_posts and self.latest_posts[feed_name] == most_recent_entry.id:
+            if (feed_name in self.latest_posts and
+            self.latest_posts[feed_name] == most_recent_entry.id):
                 continue
 
             self.latest_posts[feed_name] = most_recent_entry.id
@@ -80,7 +82,7 @@ class Info(commands.Cog):
                     embed.add_field(name='Categories', value=categories, inline=False)
 
                 await channel.send(embed=embed)
-                
+
     @nextcord.slash_command(description="Add an RSS feed to the bot.")
     async def add_feed(self, ctx: Interaction, name: str, url: str):
         """Add an RSS feed to the bot."""
@@ -118,11 +120,11 @@ class Info(commands.Cog):
         """List all RSS feeds."""
         if ctx.user.guild_permissions.administrator:
             embed = nextcord.Embed(title="RSS feeds", color=0x00ff00)
-            for feed_name in self.rss_feeds:
-                embed.add_field(name=feed_name, value=self.rss_feeds[feed_name], inline=False)
+            for feed_name, feed_url in self.rss_feeds.items():
+                embed.add_field(name=feed_name, value=feed_url, inline=False)
             await ctx.send(embed=embed)
         else:
-            await ctx.send("You lack permissions for this command.")  
+            await ctx.send("You lack permissions for this command.")
 
     @check_feed.before_loop
     async def before_check_feed(self):
