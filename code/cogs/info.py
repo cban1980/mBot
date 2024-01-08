@@ -47,12 +47,10 @@ class Info(commands.Cog):
 
     @tasks.loop(minutes=1.0)  # Checks every 1 minutes, adjust as needed
     async def check_feed(self):
-        """Check the RSS feeds for new posts."""
         for feed_name, feed_url in self.rss_feeds.items():
             feed = feedparser.parse(feed_url)
             most_recent_entry = feed.entries[0]
-
-            if self.latest_posts[feed_name] == most_recent_entry.id:
+            if feed_name in self.latest_posts and self.latest_posts[feed_name] == most_recent_entry.id:
                 continue
 
             self.latest_posts[feed_name] = most_recent_entry.id
@@ -79,6 +77,43 @@ class Info(commands.Cog):
                     embed.add_field(name='Categories', value=categories, inline=False)
 
                 await channel.send(embed=embed)
+                
+    # Slash command to add an rss feed to ../config/rssfeeds.conf with name and adress.
+    @nextcord.slash_command(description="Add an RSS feed to the bot.")
+    async def add_feed(self, ctx: Interaction, name: str, url: str):
+        """Add an RSS feed to the bot."""
+        if ctx.user.guild_permissions.administrator:
+            if name in self.rss_feeds:
+                await ctx.send(f"Feed {name} already exists.")
+            else:
+                with open('../config/rssfeeds.conf', 'a', encoding="utf-8") as f:
+                    f.write(f"\n{name} {url}\n")
+                self.rss_feeds[name] = url
+                await ctx.send(f"Feed {name} added.")
+        else:
+            await ctx.send("You lack permissions for this command.")
+
+    # Slash command to remove an rss feed from ../config/rssfeeds.conf.
+    # Takes the name of the feed as an argument, but deletes the whole line.
+    # Existing feeds in ../config/rssfeeds.conf will be listed as tabable arguments
+    # in the slash command.
+    @nextcord.slash_command(description="Remove an RSS feed from the bot.")
+    async def remove_feed(self, ctx: Interaction, name: str):
+        """Remove an RSS feed from the bot."""
+        if ctx.user.guild_permissions.administrator:
+            if name in self.rss_feeds:
+                with open('../config/rssfeeds.conf', 'r', encoding="utf-8") as f:
+                    lines = f.readlines()
+                with open('../config/rssfeeds.conf', 'w', encoding="utf-8") as f:
+                    for line in lines:
+                        if name not in line:
+                            f.write(line)
+                del self.rss_feeds[name]
+                await ctx.send(f"Feed {name} removed.")
+            else:
+                await ctx.send(f"Feed {name} does not exist.")
+        else:
+            await ctx.send("You lack permissions for this command.")    
 
     @check_feed.before_loop
     async def before_check_feed(self):
