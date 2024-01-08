@@ -1,7 +1,7 @@
 # ignore those files
 .env
 .admins
-.nohup.out
+nohup.out
 bin/
 __pycache__/
 lib/
