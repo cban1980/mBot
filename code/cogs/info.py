@@ -1,5 +1,5 @@
 # Name: info.py
-# Description: Information functions/methods and slash commands.
+"""Information functions/methods and slash commands."""
 
 import feedparser
 import json
@@ -9,8 +9,9 @@ from nextcord.ext import tasks, commands
 from nextcord import Interaction
 from bs4 import BeautifulSoup
 
-class info(commands.Cog):
+class Info(commands.Cog):
     def __init__(self, bot):
+        """Initialize the cog."""
         self.bot = bot
         self.rss_feeds = self.load_rss_feeds('../config/rssfeeds.conf')
         self.latest_posts_file = ('../data/latest_posts.json')
@@ -28,6 +29,7 @@ class info(commands.Cog):
         self.check_feed.start()
 
     def load_rss_feeds(self, file_path):
+        """Load RSS feeds from a file."""
         rss_feeds = {}
         with open(file_path, 'r') as f:
             for line in f:
@@ -38,11 +40,13 @@ class info(commands.Cog):
         return rss_feeds
 
     def cog_unload(self):
+        """Stop the background task when the cog is unloaded."""
         self.check_feed.cancel()
 
 
     @tasks.loop(minutes=1.0)  # Checks every 1 minutes, adjust as needed
     async def check_feed(self):
+        """Check the RSS feeds for new posts."""
         for feed_name, feed_url in self.rss_feeds.items():
             feed = feedparser.parse(feed_url)
             most_recent_entry = feed.entries[0]
@@ -62,7 +66,8 @@ class info(commands.Cog):
                     clean_summary = soup.get_text()
                 else:
                     clean_summary = ''
-                embed = nextcord.Embed(title=most_recent_entry.title, description=clean_summary, url=most_recent_entry.link)
+                embed = nextcord.Embed(title=most_recent_entry.title,
+                                        description=clean_summary, url=most_recent_entry.link)
                 embed.set_author(name=feed_name)  # Set the name of the RSS feed as the author of the embed
 
                 if 'media_content' in most_recent_entry:
@@ -76,7 +81,8 @@ class info(commands.Cog):
 
     @check_feed.before_loop
     async def before_check_feed(self):
+        """Wait until the bot is ready."""
         await self.bot.wait_until_ready()
 
 def setup(bot):
-    bot.add_cog(info(bot))
+    bot.add_cog(Info(bot))
