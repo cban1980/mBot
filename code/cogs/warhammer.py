@@ -1,19 +1,21 @@
+"""Warhammer 40k commands and functions."""
+import random
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction
 import requests
 from bs4 import BeautifulSoup as bs
-import random
 
 
 def scrape_thoughts():
+    """Scrape the Lexicanum for thoughts of the day."""
     urls = [
     "https://wh40k.lexicanum.com/wiki/Thought_for_the_day_(A_-_H)",
     "https://wh40k.lexicanum.com/wiki/Thought_for_the_day_(I_-_P)",
     "https://wh40k.lexicanum.com/wiki/Thought_for_the_day_(Q_-_Z)"
     ]
     url = random.choice(urls)
-    response = requests.get(url)
+    response = requests.get(url,timeout=10)
     soup = bs(response.content, "html.parser")
 
     # Find all tables under the "mw-content-text" div with class "mw-content-ltr"
@@ -33,6 +35,7 @@ def scrape_thoughts():
     return thoughts
 
 def get_random_quote():
+    """Return a random quote from the Lexicanum."""
     urls = [
     "https://wh40k.lexicanum.com/wiki/Imperium_Quotes",
     "https://wh40k.lexicanum.com/wiki/Adeptus_Arbites_Quotes",
@@ -51,7 +54,7 @@ def get_random_quote():
     "https://wh40k.lexicanum.com/wiki/Tyranid_Quotes"
     ]
     url = random.choice(urls)
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     soup = bs(response.content, 'html.parser')
     table = soup.find("div", {"id": "mw-content-text", "class": "mw-content-ltr"})
     rows = table.find_all('tr')
@@ -75,13 +78,15 @@ def get_random_quote():
     return (random_quote["Quote"], random_quote["Speaker"], random_quote["Source"])
 
 class WarhammerCog(commands.Cog):
+    """Warhammer 40k commands and functions."""
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
-    
+
     # Define a slash command to send a random thought of the day and its source
     @nextcord.slash_command(name="whthought", description="Warhammer 40k thought of the day")
     async def whthought(self, ctx: nextcord.Interaction):
+        """Sends a random Warhammer 40k thought of the day."""
         # Scrape the quotes
         quotes = scrape_thoughts()
         # Get a random quote and its source
@@ -94,8 +99,13 @@ class WarhammerCog(commands.Cog):
         await ctx.send(embed=embed)
     @nextcord.slash_command(name="whquote")
     async def whquote(self, ctx: nextcord.Interaction):
+        """Sends a random Warhammer 40k quote."""
         quote, speaker, source = get_random_quote()
-        while not speaker or speaker == "Speaker" or not quote or quote == "Quote" or not source or source == "Source":
+        while (
+            not speaker or speaker == "Speaker" or
+            not quote or quote == "Quote" or
+            not source or source == "Source"
+        ):
             quote, speaker, source = get_random_quote()
         embed = nextcord.Embed()
         if quote and quote != "Quote":
@@ -113,17 +123,24 @@ class WarhammerCog(commands.Cog):
             num_dice = int(num_dice)
             dice_type = int(dice_type)
         except ValueError:
-            await ctx.send('Invalid input format. Please specify the number and type of dice to roll (e.g. 2d6).')
+            await interaction.send(
+            'Invalid input format. Please specify the number and type of dice to roll (e.g. 2d6).'
+            )
             return
 
         if num_dice <= 0 or dice_type <= 0:
-            await ctx.send('Invalid input. The number and type of dice to roll must be positive integers.')
+            await interaction.send(
+            'Invalid input. The number and type of dice to roll must be positive integers.'
+            )
             return
 
         rolls = [random.randint(1, dice_type) for _ in range(num_dice)]
         total = sum(rolls)
 
-        await interaction.response.send_message(f'Rolling {num_dice}d{dice_type}...\n{rolls}\nTotal: {total}')
+        await interaction.response.send_message(
+            f'Rolling {num_dice}d{dice_type}...\n{rolls}\nTotal: {total}'
+        )
 
 def setup(bot):
+    """Add the cog to the bot."""
     bot.add_cog(WarhammerCog(bot))
