@@ -1,3 +1,4 @@
+"""Main bot function and cog handling."""
 import os
 from nextcord import Intents
 import nextcord
@@ -21,7 +22,7 @@ with open("../config/token", "r") as file:
             break
 
 # Set variable for config directory. which will be used for loading admin list and other configs.
-# will be located in the same directory as the mBot.py file.
+# will be located in the same directory as the mbot.py file.
 
 
 intents = nextcord.Intents.default()
@@ -66,7 +67,7 @@ async def on_ready():
 # These commands are pretty much self explainatory.
 
 
-class mBot(commands.Cog):
+class mbot(commands.Cog):
     def __init__(self, bot):
         self.client = bot
 
@@ -111,7 +112,7 @@ class mBot(commands.Cog):
             await ctx.send(f"⚙️ Extension {extension} was not found. ❌")
         except Exception as e:
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
-    
+
     @bot.slash_command(name="listcogs", description="List currently loaded cogs.")
     async def listcogs(interaction: nextcord.Interaction):
         loaded_cogs = ", ".join(bot.extensions.keys())
