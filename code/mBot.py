@@ -15,8 +15,11 @@ import os
 
 logging.basicConfig(level=logging.ERROR)
 
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+with open("../config/token", "r") as file:
+    for line in file:
+        if line.startswith("DISCORD_TOKEN="):
+            TOKEN = line[len("DISCORD_TOKEN="):].strip()
+            break
 
 # Set variable for config directory. which will be used for loading admin list and other configs.
 # will be located in the same directory as the mBot.py file.
