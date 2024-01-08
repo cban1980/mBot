@@ -1,21 +1,18 @@
 """Main bot function and cog handling."""
 import os
-from nextcord import Intents
-import nextcord
-from nextcord.ext import commands
-from nextcord import Interaction
 import logging
 import random
+import nextcord
+from nextcord.ext import commands
 import requests
 from bs4 import BeautifulSoup as bs
-import os
 
 
 # Set up basic logging.
 
 logging.basicConfig(level=logging.ERROR)
 
-with open("../config/token", "r") as file:
+with open("../config/token", "r", encoding="utf-8") as file:
     for line in file:
         if line.startswith("DISCORD_TOKEN="):
             TOKEN = line[len("DISCORD_TOKEN="):].strip()
@@ -34,7 +31,13 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 @bot.event
 async def on_ready():
-    print("We have logged in as {bot.user}")
+    """Prints bot name and ID when bot is ready."""
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+    await bot.change_presence(activity=nextcord.Game(name=bofh()))
+
+# Some bot commands for handling loading and unloading of cogs.
+# These commands are pretty much self explainatory.
 
 initial_extensions = []
 for filename in os.listdir('./cogs'):
@@ -50,35 +53,28 @@ if __name__ == '__main__':
 # Bofh function to use for Bot activity upon login.
 def bofh():
     """Return random bofh quote"""
-    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses').text
+    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses', timeout=10).text
     soup = bs(url_data, 'html.parser')
     for line in soup:
         soppa = line.splitlines()
         soppa = random.choice(soppa)
     return soppa
 
-@bot.event
-async def on_ready():
-    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    print('------')
-    await bot.change_presence(activity=nextcord.Game(name=bofh()))
-
-# Some bot commands for handling loading and unloading of cogs.
-# These commands are pretty much self explainatory.
-
-
-class mbot(commands.Cog):
+class Mbot(commands.Cog):
+    """Cog for handling loading and unloading of cogs."""
     def __init__(self, bot):
         self.client = bot
 
     async def cog_check(self, ctx):
+        """Check if user is admin."""
         if not ctx.author.guild_permissions.administrator:
             await ctx.send("You lack permissions for this command.")
             return False
         return True
 
     @bot.slash_command(description="Load cog.")
-    async def loadcog(ctx, extension):
+    async def loadcog(self, ctx, extension):
+        """Load cog."""
         try:
             bot.load_extension(f"cogs.{extension}")
             await ctx.send(f"⚙️ Loaded extension: {extension} ✅")
@@ -90,7 +86,8 @@ class mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(description="Unload cog.")
-    async def unloadcog(ctx, extension):
+    async def unloadcog(self, ctx, extension):
+        """Unload cog."""
         try:
             bot.unload_extension(f"cogs.{extension}")
             await ctx.send(f"⚙️ Unloaded extension: {extension} ✅")
@@ -102,7 +99,8 @@ class mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(description="Reload cogs.")
-    async def reloadcogs(ctx, extension):
+    async def reloadcogs(self, ctx, extension):
+        """Reload cog."""
         try:
             bot.reload_extension(f"cogs.{extension}")
             await ctx.send(f"⚙️ Reloaded extension: {extension} ✅")
@@ -114,7 +112,8 @@ class mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(name="listcogs", description="List currently loaded cogs.")
-    async def listcogs(interaction: nextcord.Interaction):
+    async def listcogs(self, interaction: nextcord.Interaction):
+        """List currently loaded cogs."""
         loaded_cogs = ", ".join(bot.extensions.keys())
         await interaction.send(f"⚙️ Loaded cogs: {loaded_cogs} ⚙️")
 
