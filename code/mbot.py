@@ -67,7 +67,7 @@ class Mbot(commands.Cog):
     def __init__(self, bot):
         self.client = bot
 
-    async def cog_check(self, ctx):
+    def cog_check(self, ctx):
         """Check if user is admin."""
         if not ctx.author.guild_permissions.administrator:
             await ctx.send("You lack permissions for this command.")
