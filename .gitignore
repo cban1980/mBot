@@ -1,4 +1,8 @@
-# ignore those files 
+# ignore those files
 .env
 .admins
 .nohup.out
+bin/
+__pycache__/
+lib/
+lib64/

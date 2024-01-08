@@ -39,7 +39,7 @@ class info(commands.Cog):
 
     def cog_unload(self):
         self.check_feed.cancel()
-    
+
 
     @tasks.loop(minutes=1.0)  # Checks every 1 minutes, adjust as needed
     async def check_feed(self):
