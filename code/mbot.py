@@ -2,8 +2,10 @@
 import os
 import logging
 import random
+from nextcord import Intents
 import nextcord
 from nextcord.ext import commands
+from nextcord import Interaction
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -53,7 +55,7 @@ if __name__ == '__main__':
 # Bofh function to use for Bot activity upon login.
 def bofh():
     """Return random bofh quote"""
-    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses', timeout=10).text
+    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses').text
     soup = bs(url_data, 'html.parser')
     for line in soup:
         soppa = line.splitlines()
