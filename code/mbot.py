@@ -1,7 +1,7 @@
 """Main bot function and cog handling."""
-import os
 import logging
 import random
+import os
 from nextcord import Intents
 import nextcord
 from nextcord.ext import commands
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 # Bofh function to use for Bot activity upon login.
 def bofh():
     """Return random bofh quote"""
-    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses').text
+    url_data = requests.get('http://pages.cs.wisc.edu/~ballard/bofh/excuses', timeout=10).text
     soup = bs(url_data, 'html.parser')
     for line in soup:
         soppa = line.splitlines()
@@ -75,7 +75,7 @@ class Mbot(commands.Cog):
         return True
 
     @bot.slash_command(description="Load cog.")
-    async def loadcog(self, ctx, extension):
+    async def loadcog(ctx, extension):
         """Load cog."""
         try:
             bot.load_extension(f"cogs.{extension}")
@@ -88,7 +88,7 @@ class Mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(description="Unload cog.")
-    async def unloadcog(self, ctx, extension):
+    async def unloadcog(ctx, extension):
         """Unload cog."""
         try:
             bot.unload_extension(f"cogs.{extension}")
@@ -101,7 +101,7 @@ class Mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(description="Reload cogs.")
-    async def reloadcogs(self, ctx, extension):
+    async def reloadcogs(ctx, extension):
         """Reload cog."""
         try:
             bot.reload_extension(f"cogs.{extension}")
@@ -114,7 +114,7 @@ class Mbot(commands.Cog):
             await ctx.send(f"⚙️ An error occurred while unloading extension {extension}: {e} ❌")
 
     @bot.slash_command(name="listcogs", description="List currently loaded cogs.")
-    async def listcogs(self, interaction: nextcord.Interaction):
+    async def listcogs(interaction: nextcord.Interaction):
         """List currently loaded cogs."""
         loaded_cogs = ", ".join(bot.extensions.keys())
         await interaction.send(f"⚙️ Loaded cogs: {loaded_cogs} ⚙️")
