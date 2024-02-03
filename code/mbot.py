@@ -115,3 +115,4 @@ class Mbot(commands.Cog):
         await interaction.send(f"⚙️ Loaded cogs: {loaded_cogs} ⚙️")
 
 bot.run(TOKEN)
+    
