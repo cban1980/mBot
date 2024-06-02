@@ -53,12 +53,15 @@ class Info(commands.Cog):
         """Check for new posts in the RSS feeds."""
         for feed_name, feed_url in self.rss_feeds.items():
             feed = feedparser.parse(feed_url)
+            if not feed.entries:  # Check if the entries list is empty
+                continue  # Skip to the next iteration if it is
             most_recent_entry = feed.entries[0]
             if (feed_name in self.latest_posts and
-            self.latest_posts[feed_name] == most_recent_entry.id):
+                hasattr(most_recent_entry, 'id') and
+                self.latest_posts[feed_name] == most_recent_entry.id):
                 continue
 
-            self.latest_posts[feed_name] = most_recent_entry.id
+            self.latest_posts[feed_name] = most_recent_entry.id if hasattr(most_recent_entry, 'id') else None
             with open(self.latest_posts_file, 'w', encoding="utf-8") as f:
                 json.dump(self.latest_posts, f)
 
@@ -67,9 +70,10 @@ class Info(commands.Cog):
             if channel:
                 if hasattr(most_recent_entry, 'summary'):
                     soup = BeautifulSoup(most_recent_entry.summary, 'html.parser')
-                    clean_summary = soup.get_text()
+                    clean_summary = soup.get_text()[:4096]
                 else:
                     clean_summary = ''
+
                 embed = nextcord.Embed(title=most_recent_entry.title,
                                         description=clean_summary, url=most_recent_entry.link)
                 embed.set_author(name=feed_name)
